@@ -1,23 +1,12 @@
-: IMMEDIATE  last_word @ cfa 1 - dup c@ 1 or swap c! ;
+: > < not ;
 
-: rot >r swap r> swap ;
-: -rot swap >r swap  r> ;
-
-: over >r dup r> swap ;
-: 2dup over over ;
-
-: <> = not ;
-: <= 2dup < -rot =  lor ;
-: > <= not ;
-: >= < not ; 
+: IMMEDIATE  last_word @ cfa 1 - dup @ 1 or swap c! ;
 
 
 : cell% 8 ;
 : cells cell% * ;
 : KB 1024 * ;
 : MB KB KB  ;
-
-: allot dp @ swap over + dp ! ;
 
 : begin here ; IMMEDIATE
 : again ' branch , , ; IMMEDIATE
@@ -30,52 +19,14 @@
 : repeat here ; IMMEDIATE
 : until  ' 0branch , , ; IMMEDIATE
 
-
-: for 
-      ' swap ,
-      ' >r , 
-      ' >r , 
-here  ' r> , 
-      ' r> , 
-      ' 2dup , 
-      ' >r , 
-      ' >r , 
-      ' < ,  
-      ' 0branch ,  
-here    0 , 
-       swap ; IMMEDIATE
-
-: endfor 
-      ' r> , 
-      ' lit , 1 ,   
-        ' + , 
-       ' >r , 
-   ' branch , 
-            ,  here swap ! 
-       ' r> , 
-     ' drop , 
-       ' r> , 
-     ' drop ,  
-
-;  IMMEDIATE
+: for ' >r , here ' dup , ' r@ , ' > , ' 0branch ,  here 0 , swap ; IMMEDIATE
+: endfor ' r> , ' lit , 1 , ' + , ' >r , ' branch , , here swap ! ' r> , ;  IMMEDIATE
 
 : do  ' swap , ' >r , ' >r ,  here ; IMMEDIATE
 
-: loop 
-        ' r> , 
-        ' lit , 1 , 
-        ' + , 
-        ' dup ,     
-        ' r@ , 
-        ' < , 
-        ' not , 
-        '  swap , 
-        ' >r , 
-        ' 0branch , ,
-        ' r> , 
-        ' drop ,
-        ' r> , 
-        ' drop ,
+: loop ' r> , ' lit , 1 , ' + , ' dup , ' r@ , ' < , ' not , '  swap , ' >r , ' 0branch , ,
+' r> , ' drop ,
+' r> , ' drop ,
  ;  IMMEDIATE
 
 
@@ -92,13 +43,22 @@ here    0 ,
 
 ( Now we can define comments :)
 
+( a b c -- b c a )
+: rot >r swap r> swap ;
+: -rot swap >r swap  r> ;
 
+: over >r dup r> swap ;
+: 2dup over over ;
 : 2drop drop drop ;
 : 2over >r >r dup r> swap r> swap ;
 : case 0 ; IMMEDIATE
 : of ' over , ' = , ' if execute ' drop , ; IMMEDIATE
 : endof ' else execute ; IMMEDIATE
 : endcase ' drop , dup if repeat ' then execute dup not until drop then  ; IMMEDIATE
+
+: <> = not ;
+: <= 2dup < -rot =  lor ;
+: >= 2dup > -rot = lor ;
 
 
 ( num from to -- 1/0)
@@ -122,7 +82,7 @@ then
 ;
 
 : cr 10 emit ;
-: QUOTE 34 ;
+: QUOTE 34 emit ;
 
 : _"
   compiling if
@@ -168,20 +128,6 @@ then
 readce dup 34 = if drop 1 else emit 0 then
       until 
     then ; IMMEDIATE
-
-: g" 
-    dp @ 
-
-    repeat
-        readce dup 34 = if 
-            drop 0 1 allot c! 1 
-        else 1 allot c! 0 then
-    until 
-  
-    compiling if 
-    ' lit , , 
-    then ; IMMEDIATE
-
 
 : ." ' " execute compiling if ' prints , then ; IMMEDIATE
 
@@ -261,6 +207,8 @@ compnumber
     r@ file-close
     r> drop ;
 
+( cells - addr )
+: allot dp @ swap over + dp ! ;
 
 : global inbuf word drop 0  inbuf create ' docol @ , ' lit , cell% allot , ' exit ,  ;
 : constant inbuf word drop 0 inbuf create ' docol @ , ' lit , , ' exit , ;
@@ -271,8 +219,6 @@ compnumber
 : end-struct constant  ;
 
 include diagnostics.frt
-include doc-engine.frt
-include documentation.frt
 
 16 MB ( heap size )
 include heap.frt
@@ -295,8 +241,4 @@ include runtime-meta.frt
 include managed-string.frt
 
 ." Forthress -- a tiny Forth from scratch > (c) Igor Zhirkov 2017-2018 " cr
-
-include fib.frt
-
-include native.frt
 

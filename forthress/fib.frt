@@ -26,3 +26,9 @@ _______
 
 then ; 
 
+: prime ; 
+
+: perfect-sq ; 
+
+
+
