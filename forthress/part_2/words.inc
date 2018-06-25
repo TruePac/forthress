@@ -174,7 +174,68 @@ native "<", less
   setl al
   movzx rax, al
   push rax
-  jmp next      
+  jmp next   
+
+;logic block
+
+;(a - a') a'= 0 if a!= 0 a'= 1 if a==0
+native "not", not
+    pop rax
+    test rax, rax
+    je .yes
+    push 0
+    jmp next
+    .yes: push 1
+    jmp next   
+
+; (ab - c) c=1 if a==b c=0 if a!=b
+native "=", equals 
+  pop rax
+  pop rcx
+  cmp rax, rcx
+  sete al
+  movzx rax, al
+  push rax
+  jmp next
+
+;logical and
+native "land", land
+    pop rax
+    pop rdx
+    test rax, rax
+    jz .no
+    push rdx
+    jmp next
+.no:
+    push rax
+    jmp next
+
+;logical or
+native "lor", lor
+    pop rax
+    pop rdx
+    test rax, rax
+    jnz .yes
+    push rdx
+    jmp next
+.yes:
+    push rax
+    jmp next
+
+;bitwice block
+
+;bitwice and
+native "and", and
+    pop rax
+    and [rsp], rax
+    jmp next
+
+;bitwice or
+native "or", or
+    pop rax
+    or [rsp], rax
+    jmp next
+
 
 
 
