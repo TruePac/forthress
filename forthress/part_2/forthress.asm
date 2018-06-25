@@ -25,7 +25,7 @@ p_cmp_flag: dq 0
 state: dq 0
 
 section .bss
-user_memory: resq 65536
+user_mem: resq 65536
 user_dict: resq 65536
 return_stack: resq 1024
 

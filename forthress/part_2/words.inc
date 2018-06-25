@@ -1,6 +1,6 @@
 ;Block of constants
 	const inbuf, current_word
-	const mem, user_memory
+	const mem, user_mem
 	const state, state
 	const here, [here]
 	const last_word, last_word
