@@ -59,8 +59,22 @@ native "create", create
     mov [here], rsi
     jmp next
 
- 
+colon ":", colon
+.restart:
+    dq xt_inbuf, xt_word
+    branch0 .restart
+    dq xt_lit, 0, xt_inbuf, xt_create
+    dq xt_lit, 1, xt_state, xt_put_int
+    dq xt_lit, i_docol, xt_comma
+    dq xt_exit
+
+colon ";", semicolon, 1
+    dq xt_lit, 0, xt_state, xt_put_int
+    dq xt_lit, xt_exit, xt_comma
+    dq xt_exit    
+
 ; utils block
+
 native "find", find
   	pop rdi
   	call find_word
@@ -89,7 +103,7 @@ native "bye", bye
   	mov rax, 60
   	syscall
 
-error_underflow:
+stack_underflow:
 	mov rdi, msg_stack_underflow
 	call print_string
 	jmp next
@@ -114,7 +128,7 @@ native "dup", dup
 ; drop top of stack
 native "drop", drop		
 	cmp rsp, [stack_head]
-	jge error_underflow
+	jge stack_underflow
 	pop rax
 	jmp next
 
@@ -283,7 +297,7 @@ native "c@", get_char
 ;Print top of stack
 native ".", dot     
   cmp rsp, [stack_head]
-  jge error_underflow
+  jge stack_underflow
   pop rdi
   call print_int
   jmp next
