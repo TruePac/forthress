@@ -94,6 +94,8 @@ error_underflow:
 	call print_string
 	jmp next
 
+;basics block
+
 ;Print top of stack
 native ".", dot			
 	cmp rsp, [stack_head]
@@ -123,6 +125,56 @@ native "drop", drop
 	jge error_underflow
 	pop rax
 	jmp next
+
+; arifmetics block
+
+;(xy - [x + y])
+native "+", plus
+  pop rax
+  add [rsp], rax
+  jmp next
+
+;(xy - [x - y])
+native "-", min
+  pop rax
+  sub [rsp], rax
+  jmp next
+
+;(xy - [x * y])
+native "*", mult
+  pop rax
+  pop rdx
+  imul rax, r8
+  push rax
+  jmp next
+
+;(xy - [x / y])
+native "/", div
+  pop rax
+  pop r8
+  mov rdx, 0
+  idiv r8
+  push rax
+  jmp next
+
+;(yx - [x mod y])
+native "%", mod
+    pop rcx
+    pop rax
+    cqo
+    idiv rcx
+    push rdx
+    jmp next 
+
+;(xy - [x < y])
+native "<", less 
+  pop rax
+  pop rcx
+  cmp rcx, rax
+  setl al
+  movzx rax, al
+  push rax
+  jmp next      
 
 
 

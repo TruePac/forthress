@@ -49,7 +49,7 @@ interpreter_loop:
     cmp byte [state], 0
     jne .compile
     test rax, rax
-    jz .not_word
+    jz .undef
     mov rdi, rax
     call cfa
 
@@ -58,7 +58,7 @@ interpreter_loop:
     mov pc, program_stub
     jmp next
 
-.not_word:
+.undef:
     mov rdi, current_word
     call parse_int
     test rdx, rdx
@@ -73,7 +73,7 @@ interpreter_loop:
 
 .compile:
     test rax, rax
-    jz .not_word_compile
+    jz .not_compile
     mov rdi, rax
     call cfa
     lea rdx, [rax - 1]
@@ -86,7 +86,7 @@ interpreter_loop:
     add qword [here], 8
     jmp interpreter_loop
 
-.not_word_compile:
+.not_compile:
     mov rdi, current_word
     call parse_int
     test rdx, rdx
