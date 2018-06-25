@@ -255,7 +255,41 @@ native "r@", copy_rs
     mov rax, [rstack]
     push rax
     jmp next    
-    
+
+;Memory operations
+
+;(val addr --) Store value by address
+native "!", put_int
+    pop rax
+  pop rdx
+  mov [rax], rdx
+  jmp next
+
+;(char addr --) Store one byte by address
+native "c!", put_char
+    pop rax
+    pop rdx
+    mov [rax], dl
+    jmp next
+
+;(addr -- value) Fetch value from memory
+native "@", get_int
+    pop rax
+  mov rax, [rax]
+  push rax
+  jmp next
+
+;(addr -- char) Read one byte starting at addr
+native "c@", get_char
+    pop rax
+    movzx rax, byte [rax]
+    push rax
+    jmp next
+
+
+
+
+
 
 
 
