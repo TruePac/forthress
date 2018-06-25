@@ -96,14 +96,6 @@ error_underflow:
 
 ;basics block
 
-;Print top of stack
-native ".", dot			
-	cmp rsp, [stack_head]
-	jge error_underflow
-	pop rdi
-	call print_int
-	jmp next
-
 ; (ab - ba)
 native "swap", swap
   pop rax
@@ -285,6 +277,74 @@ native "c@", get_char
     movzx rax, byte [rax]
     push rax
     jmp next
+
+;Input-Output
+
+;Print top of stack
+native ".", dot     
+  cmp rsp, [stack_head]
+  jge error_underflow
+  pop rdi
+  call print_int
+  jmp next
+
+;Print stack
+native ".S", print_stack   
+  mov rax, rsp
+  .loop:
+    cmp rax, [stack_head]
+    jge next    
+    mov rdi, [rax]
+    push rax
+    call print_int
+    call print_newline
+    pop rax
+    add rax, 8
+    jmp .loop 
+
+; (str -- len ) Accepts a null-terminated string, calculates its length.
+native "count", count
+  pop rdi
+  call string_length
+  push rax
+  jmp next
+
+; ( str cnt -- ) Prints a certain amount of characters from string.
+native "printc", printc
+  mov rax, 1
+  mov rdi, 1
+  pop rsi
+  pop rdx
+  syscall
+  jmp next
+
+;( c -- ) Outputs a single character to stdout
+native "emit", emit
+    pop rdi
+    call print_char
+    jmp next
+
+ ; ( addr -- len ) Reads word from stdin and stores it starting at address addr. 
+native "word", word
+    pop rdi
+    call read_word
+    push rdx
+    jmp next   
+
+;( str -- len num ) Parses an integer from string
+native "number", number   
+  call read_word
+  mov rax, rdi
+  call parse_int
+  push rax
+  jmp next
+
+ ;( addr -- ) Prints a null-terminated string.
+native "prints", prints
+  pop rdi
+  call print_string
+  jmp next 
+
 
 
 
