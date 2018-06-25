@@ -236,6 +236,27 @@ native "or", or
     or [rsp], rax
     jmp next
 
+;return stack operations
+
+; Push from return stack into data stack
+native "r>", push_r
+  rpop rax
+  push rax
+  jmp next
+
+; Pop from data stack into return stack
+native ">r", pop_r
+  pop rax
+  rpush rax
+  jmp next
+
+; Non-destructive copy from the top of return stack to the top of data stack
+native "r@", copy_rs
+    mov rax, [rstack]
+    push rax
+    jmp next    
+    
+
 
 
 
