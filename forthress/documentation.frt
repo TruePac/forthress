@@ -112,21 +112,3 @@ Multiply the topmost element of the stack by 1024.
 ( a -- a * 1048576)
 Multiply the topmost element of the stack by 1024 twice.
 " doc-word
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
