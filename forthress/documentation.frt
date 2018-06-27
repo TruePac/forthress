@@ -5,12 +5,12 @@ Duplicate the cell on top of the stack.
 
 ' drop g"
 ( a -- )
-Drop the topmost element of the stack.
+Drop the topmost element of the stack
 " doc-word
 
 ' swap g" 
 ( a b -- b a )
-Swap two topmost elements of the stack.
+Swap two topmost elements of the stack
 " doc-word
 
 ' 2over g"
